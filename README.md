@@ -6,3 +6,6 @@
   `pip install pystray pillow win10toast`
   
 Чтобы приложение появилось при входе в Windows — создайте ярлык запуска в папке автозагрузки.
+
+ToDo:
+- [ ] поддержка Arch Linux(KDE,Hyprrrland)
