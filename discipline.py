@@ -1,16 +1,3 @@
-"""
-Простое фоновое приложение для Windows 10 на Python.
-Показывает toast-уведомление "ЗАКРУГЛЯЙСЯ!" каждые 25 минут и живёт в системном трее.
-
-Требования:
-  pip install pystray pillow win10toast
-
-Запуск без консоли (рекомендуется):
-  pythonw.exe "C:\путь\к\Приложение_ЗАКРУГЛЯЙСЯ.py"
-
-Чтобы приложение появилось при входе в Windows — создайте ярлык запуска в папке автозагрузки.
-"""
-
 import threading
 import time
 import sys
@@ -26,9 +13,8 @@ TOAST_MESSAGE = "ЗАКРУГЛЯЙСЯ!"
 
 _stop_event = threading.Event()
 
-
+# создаёт простую иконку для трея (кружок с буквой Z)
 def _create_image(size=64, color1=(0, 120, 215), color2=(255, 255, 255)):
-    # создаёт простую иконку для трея (кружок с буквой Z)
     img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     # фон
@@ -53,16 +39,13 @@ class NotifierThread(threading.Thread):
         self.notifier = ToastNotifier()
 
     def run(self):
-        # отправляем первое уведомление сразу при старте
+        # первое уведомление при старте
         try:
             while not _stop_event.is_set():
-                # показать уведомление (threaded=True чтобы не блокировать)
                 try:
                     self.notifier.show_toast(self.title, self.message, duration=self.duration, threaded=True)
                 except Exception:
-                    # в редких случаях win10toast может выбросить ошибку — игнорируем и продолжаем
                     pass
-                # ждать интервал по кусочкам чтобы реагировать на остановку
                 waited = 0
                 while waited < self.interval and not _stop_event.is_set():
                     time.sleep(1)
@@ -83,7 +66,6 @@ def main():
     icon_image = _create_image(64)
     menu = (item('Exit', on_exit),)
     icon = pystray.Icon('zakruglayasya', icon_image, 'ЗАКРУГЛЯЙСЯ', menu)
-    # при закрытии трея pystray вызовет on_exit
     icon.run()
 
 
@@ -93,3 +75,4 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         _stop_event.set()
         sys.exit(0)
+
